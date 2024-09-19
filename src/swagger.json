@@ -1,0 +1,1599 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Blog API",
+    "version": "1.0.0",
+    "description": "API documentation for the Blog API with REST and GraphQL"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/posts": {
+      "get": {
+        "summary": "Fetch all posts",
+        "description": "Fetch a list of all blog posts. This endpoint is public and does not require authentication.",
+        "responses": {
+          "200": {
+            "description": "A list of blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostList"
+                },
+                "examples": {
+                  "sample": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "title": "Lorem Ipsum",
+                        "perex": "Short summary of the post.",
+                        "content": "Full content of the blog post.",
+                        "authorId": 1,
+                        "createdAt": "2023-09-17T12:34:56.789Z"
+                      },
+                      {
+                        "id": 2,
+                        "title": "Dolor Sit Amet",
+                        "perex": "Another post summary.",
+                        "content": "Detailed content of the blog post.",
+                        "authorId": 2,
+                        "createdAt": "2023-09-18T14:12:45.123Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to fetch posts"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new post",
+        "description": "Create a new blog post. Requires JWT authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePost"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "title": "Sample Post Title",
+                    "perex": "A brief summary of the post.",
+                    "content": "This is the full content of the post..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "title": "Sample Post Title",
+                      "perex": "A brief summary of the post.",
+                      "content": "This is the full content of the post...",
+                      "authorId": 1,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Validation error: Title is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to create post"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "summary": "Fetch a post by ID",
+        "description": "Fetch a specific post by its ID. This endpoint is public and does not require authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the post to fetch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "title": "Lorem Ipsum",
+                      "perex": "Short summary of the post.",
+                      "content": "Full content of the blog post.",
+                      "authorId": 1,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid post ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid post ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Post not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to fetch post"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a post by ID",
+        "description": "Update an existing post by its ID. At least one of 'title', 'perex', or 'content' must be provided. Requires JWT authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the post to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePost"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "title": "Updated Post Title",
+                    "perex": "An updated brief summary.",
+                    "content": "Updated content of the post..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "title": "Updated Post Title",
+                      "perex": "An updated brief summary.",
+                      "content": "Updated content of the post...",
+                      "authorId": 1,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid post ID or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid post ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not authorized to edit this post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "You are not authorized to edit this post"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Post not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to update post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to update post"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a post by ID",
+        "description": "Delete a post by its ID. Requires JWT authentication. THIS DELETES ALL COMMENTS WITH THE DELETED POST'S ID!",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the post to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Post deleted successfully"
+          },
+          "400": {
+            "description": "Invalid post ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid post ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not authorized to delete this post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "You are not authorized to delete this post"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Post not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to delete post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to delete post"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Register a new user by providing a username and password. This endpoint is public and does not require authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUser"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "username": "john_doe",
+                    "password": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User registered successfully"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "john_doe"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Validation error: Username must be between 3 and 15 characters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error registering user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Error registering user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Log in a user",
+        "description": "Log in an existing user by providing a username and password. This endpoint is public and does not require authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUser"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "username": "john_doe",
+                    "password": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "JWT token for authentication",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid username or password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error logging in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Error logging in"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments": {
+      "get": {
+        "summary": "Fetch all comments",
+        "description": "Fetch a list of all comments. This endpoint is public and does not require authentication.",
+        "responses": {
+          "200": {
+            "description": "A list of comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentList"
+                },
+                "examples": {
+                  "sample": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "content": "This is a comment.",
+                        "authorId": 1,
+                        "postId": 1,
+                        "score": 5,
+                        "createdAt": "2023-09-17T12:34:56.789Z"
+                      },
+                      {
+                        "id": 2,
+                        "content": "Another comment.",
+                        "authorId": 2,
+                        "postId": 1,
+                        "score": 3,
+                        "createdAt": "2023-09-18T14:12:45.123Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to fetch comments"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new comment",
+        "description": "Create a new comment on a post. Requires JWT authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateComment"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "content": "This is a comment.",
+                    "postId": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "content": "This is a comment.",
+                      "authorId": 1,
+                      "postId": 1,
+                      "score": 0,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid post ID or content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid post ID or content"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Post not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to create comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "summary": "Fetch a comment by ID",
+        "description": "Fetch a specific comment by its ID. This endpoint is public and does not require authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the comment to fetch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "content": "This is a comment.",
+                      "authorId": 1,
+                      "postId": 1,
+                      "score": 5,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid comment ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid comment ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Comment not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to fetch comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a comment by ID",
+        "description": "Update an existing comment by its ID. Requires JWT authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the comment to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateComment"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "content": "Updated content of the comment."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "content": "Updated content of the comment.",
+                      "authorId": 1,
+                      "postId": 1,
+                      "score": 5,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid comment ID or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid comment ID or validation error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not authorized to edit this comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "You are not authorized to edit this comment"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Comment not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to update comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to update comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a comment by ID",
+        "description": "Delete a comment by its ID. Requires JWT authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the comment to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment deleted successfully"
+          },
+          "400": {
+            "description": "Invalid comment ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid comment ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not authorized to delete this comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "You are not authorized to delete this comment"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Comment not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to delete comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to delete comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}/vote": {
+      "post": {
+        "summary": "Vote on a comment by ID",
+        "description": "Allows voting on a comment. Users can 'upvote' or 'downvote' a comment based on their IP. The same IP cannot vote the same way twice on a single comment, but can change the vote by sending the opposite vote type. This endpoint is public and does not require authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID of the comment to vote on"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vote"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "type": "upvote"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vote registered successfully. Returns the updated comment with the new vote count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "id": 1,
+                      "content": "This is a comment.",
+                      "authorId": 1,
+                      "postId": 1,
+                      "score": 6,
+                      "createdAt": "2023-09-17T12:34:56.789Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid comment ID or vote type. Also occurs if trying to vote the same way twice with the same IP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Invalid comment ID or vote type"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to vote on comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "sample": {
+                    "value": {
+                      "error": "Failed to vote on comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PostList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Post"
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Lorem Ipsum"
+          },
+          "perex": {
+            "type": "string",
+            "example": "Short summary of the post."
+          },
+          "content": {
+            "type": "string",
+            "example": "Full content of the blog post."
+          },
+          "authorId": {
+            "type": "integer",
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-09-17T12:34:56.789Z"
+          }
+        },
+        "required": ["id", "title", "perex", "content", "authorId", "createdAt"]
+      },
+      "CreatePost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "example": "Sample Post Title"
+          },
+          "perex": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 300,
+            "example": "A brief summary of the post."
+          },
+          "content": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1000,
+            "example": "This is the full content of the post..."
+          }
+        },
+        "required": ["title", "perex", "content"]
+      },
+      "UpdatePost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "example": "Updated Post Title"
+          },
+          "perex": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 300,
+            "example": "An updated brief summary."
+          },
+          "content": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1000,
+            "example": "Updated content of the post..."
+          }
+        },
+        "required": ["title", "perex", "content"]
+      },
+      "CommentList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Comment"
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "content": {
+            "type": "string",
+            "example": "This is a comment."
+          },
+          "authorId": {
+            "type": "integer",
+            "example": 1
+          },
+          "postId": {
+            "type": "integer",
+            "example": 1
+          },
+          "score": {
+            "type": "integer",
+            "example": 5
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-09-17T12:34:56.789Z"
+          }
+        },
+        "required": [
+          "id",
+          "content",
+          "authorId",
+          "postId",
+          "score",
+          "createdAt"
+        ]
+      },
+      "CreateComment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500,
+            "example": "This is a comment."
+          },
+          "postId": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        "required": ["content", "postId"]
+      },
+      "UpdateComment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500,
+            "example": "Updated content of the comment."
+          }
+        },
+        "required": ["content"]
+      },
+      "Vote": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["upvote", "downvote"],
+            "example": "upvote"
+          }
+        },
+        "required": ["type"]
+      },
+      "RegisterUser": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "description": "The username of the user",
+            "example": "john_doe"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "The password of the user",
+            "example": "password123"
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "LoginUser": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "The username of the user",
+            "example": "john_doe"
+          },
+          "password": {
+            "type": "string",
+            "description": "The password of the user",
+            "example": "password123"
+          }
+        },
+        "required": ["username", "password"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

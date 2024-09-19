@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  posts     Post[]   // One user can have many posts
+  comments  Comment[] // One user can have many comments
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  perex     String   // Short description or summary
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  comments  Comment[]
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  score     Int      @default(0) // Voting score for comments
+  createdAt DateTime @default(now())
+  votes     Vote[]   // One comment can have many votes
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  ip        String 
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId Int
+  value     Int      // +1 for upvote, -1 for downvote
+  createdAt DateTime @default(now())
+
+  @@unique([ip, commentId]) // Ensure uniqueness of vote by IP and comment
+}
